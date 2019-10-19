@@ -5,32 +5,36 @@ const dynamoDB = new AWS.DynamoDB.DocumentClient();
 
 export function main(event, context, callback) {
     // Event object contatins information from the invoker.
-    // Body can be accessed from the event.body which is 
+    // Body can be accessed from the event.body which is
     // JSON encoded string.
-    const data = JSON.parse(event.body);
-    
+    let body = '';
+
+    if (process.env.NODE_ENV == 'development')
+        body = event.body;
+    else
+        body = JSON.parse(event.body);
+
     const params = {
         TableName: "notes",
         // 'Item' contains the attributes of the item to be created
-        // - 'userId': user indentities are federated through the 
+        // - 'userId': user indentities are federated through the
         //              Cognito Identity Pool, we will use the identity
         //              id as the user id of the authenticated user
         // - 'noteId': a unique uuid
         // - 'content': pared from  request body
         // - 'attachment': parsed from request body
         // - 'createdAt': current Unix timestamp
-            
+
         Item: {
             userId: event.requestContext.identity.cognitoIdentityId,
             noteId: uuid.v1(),
-            content: data.attachment,
-            attachment: data.attachment,
+            content: body.attachment,
+            attachment: body.attachment,
             createdAt: Date.now()
         }
     };
-    
+
     dynamoDB.put(params, (error, data) => {
-        
         // Set headers to enable CORS (Cross-Origin Resource Sharing)
         const headers = {
             "Access-Control-Allow-Origin": "*",
@@ -43,8 +47,8 @@ export function main(event, context, callback) {
                 statusCode: 500,
                 headers: headers,
                 body: JSON.stringify({ status: false })
-            }
-            callback(null, response)
+            };
+            callback(null, response);
             return;
         }
 
