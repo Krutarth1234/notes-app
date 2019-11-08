@@ -35,9 +35,12 @@ export async function main(event, context, callback) {
 
     try {
         await dynamoDbLib.call("put", params);
+        console.log('Successfully put new note in the db for user id:'
+            + params.Item.userId +' with note id: ' + params.Item.noteId);
         return success(params.Item);
     } catch (e) {
+        console.error('Error occured while logging: ' + e);
+        console.trace();
         return failure({ status: false });
     }
-
 }
