@@ -1,0 +1,76 @@
+# NOTE: update this with your service name
+service: notes-app-api
+
+# Create an optimized package for our functions 
+package:
+  individually: true
+
+plugins:
+  - serverless-bundle # Package our functions with Webpack
+  - serverless-offline
+  - serverless-dotenv-plugin # Load .env as environment variables
+
+provider:
+  name: aws
+  runtime: nodejs10.x
+  stage: dev
+  region: us-east-1
+
+environment:
+  NODE_ENV: ${env:NODE_ENV}
+
+# 'imRoleStatements' defines the permission policy for 
+# the Lambda funciton.
+# In this case Lambda fucntions are granted with permissions
+# access dynamodb.
+iamRoleStatements:
+  - Effect: Allow
+    Action:
+      - dynamodb: DescribeTable
+      - dynamodb: Query
+      - dynamodb: Scan
+      - dynamodb: GetItem
+      - dyanmodb: PutItem
+      - dynamodb: UpdateItem
+      - dynamodb: DeleteItem
+    Resource: "arn:aws:dynamodb:us-east-1:*:*"
+
+functions:
+  create:
+  # Defines an HTTP API endpoint that calls the main funtion 
+  # in create.js
+  # - path: url path is /notes
+  # - method: POST request
+  # - cors: enabled CORS for browser cros
+  # - authorizer: authenticate using the AWS IAM role
+    handler: create.main
+    events:
+      - http:
+          path: notes
+          method: post
+          cors: true
+          authorizer: aws_iam
+  get:
+  # Defines an HTTP API endpoint that calls the main 
+  # function in get.js
+  # - path: url path is /notes/{id}
+  # - method: GET request
+    handler: get.main
+    events:
+      - http:
+        path: notes/{id}
+        method: get
+        cors: true
+        authorizer: aws_iam
+  list:
+  # Defines an HTTP API endpoint that calss the main 
+  # function in list.js
+  # - path: url path is /notes
+  # - method: GET request
+    handler: list.main
+    events:
+      - http:
+        path: notes
+        method: get
+        cors: true
+        authorizer: aws_iam
