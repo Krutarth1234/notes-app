@@ -63,7 +63,7 @@ functions:
         cors: true
         authorizer: aws_iam
   list:
-  # Defines an HTTP API endpoint that calss the main 
+  # Defines an HTTP API endpoint that calls the main fucntion
   # function in list.js
   # - path: url path is /notes
   # - method: GET request
@@ -72,5 +72,16 @@ functions:
       - http:
         path: notes
         method: get
+        cors: true
+        authorizer: aws_iam
+  update:
+  # Defines an HTTP API endpoint that calls the main function
+  # function in update.js
+  # - path: url path is /notes/{id}
+  # - method: UPDATE request
+    handler: update.main
+    events:
+      - http:
+        path: notes/{id}
         cors: true
         authorizer: aws_iam
