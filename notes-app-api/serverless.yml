@@ -10,10 +10,14 @@ plugins:
   - serverless-offline
   - serverless-dotenv-plugin # Load .env as environment variables
 
+custom:
+  defaultStage: dev
+  currentStage: ${opt:stage, self:custom.defaultStage} # 'dev' is default unless overriden by --stage flag
+
 provider:
   name: aws
   runtime: nodejs10.x
-  stage: dev
+  stage: ${self:custom.currentStage}
   region: us-east-1
 
 environment:
