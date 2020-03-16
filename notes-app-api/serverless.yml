@@ -10,10 +10,14 @@ plugins:
   - serverless-offline
   - serverless-dotenv-plugin # Load .env as environment variables
 
+custom:
+  defaultStage: dev
+  currentStage: ${opt:stage, self:custom.defaultStage} # 'dev' is default unless overriden by --stage flag
+
 provider:
   name: aws
   runtime: nodejs10.x
-  stage: dev
+  stage: ${self:custom.currentStage}
   region: us-east-1
 
 environment:
@@ -34,6 +38,11 @@ iamRoleStatements:
       - dynamodb: UpdateItem
       - dynamodb: DeleteItem
     Resource: "arn:aws:dynamodb:us-east-1:*:*"
+
+# Create our resources with separate CloudFormation templates
+resources:
+  # API Gateway Errors
+  - ${file(resources/api-gateway-errors.yml)}
 
 functions:
   create:
@@ -58,10 +67,10 @@ functions:
     handler: get.main
     events:
       - http:
-        path: notes/{id}
-        method: get
-        cors: true
-        authorizer: aws_iam
+          path: notes/{id}
+          method: get
+          cors: true
+          authorizer: aws_iam
   list:
   # Defines an HTTP API endpoint that calls the main fucntion
   # function in list.js
@@ -70,10 +79,10 @@ functions:
     handler: list.main
     events:
       - http:
-        path: notes
-        method: get
-        cors: true
-        authorizer: aws_iam
+          path: notes
+          method: get
+          cors: true
+          authorizer: aws_iam
   update:
   # Defines an HTTP API endpoint that calls the main function
   # function in update.js
@@ -82,6 +91,19 @@ functions:
     handler: update.main
     events:
       - http:
-        path: notes/{id}
-        cors: true
-        authorizer: aws_iam
+          path: notes/{id}
+          method: put
+          cors: true
+          authorizer: aws_iam
+  delete:
+  # Defines an HTTP API endpoint that calls the main function
+  # function in delete.js
+  # - path: url path is /notes/{id}
+  # - method: DELETE request
+    handler: delete.main
+    events:
+      - http:
+          path: notes/{id}
+          method: delete
+          cors: true
+          authorizer: aws_iam
