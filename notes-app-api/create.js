@@ -2,17 +2,8 @@ import uuid from "uuid";
 import * as dynamoDbLib from "./libs/dynamodb-lib";
 import {success, failure} from "./libs/response-lib";
 
-export async function main(event, context, callback) {
-    // Event object contatins information from the invoker.
-    // Body can be accessed from the event.body which is
-    // JSON encoded string.
-    let body = '';
-
-    if (process.env.NODE_ENV == 'development')
-        body = event.body;
-    else
-        body = JSON.parse(event.body);
-
+export async function main(event, context) {
+    const data = JSON.parse(event.body);
     const params = {
         TableName: "notes",
         // 'Item' contains the attributes of the item to be created
@@ -27,20 +18,16 @@ export async function main(event, context, callback) {
         Item: {
             userId: event.requestContext.identity.cognitoIdentityId,
             noteId: uuid.v1(),
-            content: body.attachment,
-            attachment: body.attachment,
+            content: data.attachment,
+            attachment: data.attachment,
             createdAt: Date.now()
         }
     };
 
     try {
         await dynamoDbLib.call("put", params);
-        console.log('Successfully put new note in the db for user id:'
-            + params.Item.userId +' with note id: ' + params.Item.noteId);
         return success(params.Item);
     } catch (e) {
-        console.error('Error occured while logging: ' + e);
-        console.trace();
         return failure({ status: false });
     }
 }

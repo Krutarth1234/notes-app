@@ -20,24 +20,24 @@ provider:
   stage: ${self:custom.currentStage}
   region: us-east-1
 
-environment:
-  NODE_ENV: ${env:NODE_ENV}
+  environment:
+    NODE_ENV: ${env:NODE_ENV}
 
 # 'imRoleStatements' defines the permission policy for 
 # the Lambda funciton.
 # In this case Lambda fucntions are granted with permissions
 # access dynamodb.
-iamRoleStatements:
-  - Effect: Allow
-    Action:
-      - dynamodb: DescribeTable
-      - dynamodb: Query
-      - dynamodb: Scan
-      - dynamodb: GetItem
-      - dyanmodb: PutItem
-      - dynamodb: UpdateItem
-      - dynamodb: DeleteItem
-    Resource: "arn:aws:dynamodb:us-east-1:*:*"
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:DescribeTable
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: 'arn:aws:dynamodb:us-east-1:*:*'
 
 # Create our resources with separate CloudFormation templates
 resources:
