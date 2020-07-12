@@ -4,6 +4,7 @@ import { Nav, Navbar, NavItem } from "react-bootstrap";
 import "./App.css";
 import Routes from "./Routes";
 import { LinkContainer } from "react-router-bootstrap";
+import { Auth } from "aws-amplify";
 
 class App extends Component {
   constructor(props) {
@@ -18,7 +19,8 @@ class App extends Component {
     this.setState({ isAuthenticated: authenticated });
   }
 
-  handleLogout = event => { 
+  handleLogout = async event => { 
+    await Auth.signOut();
     this.userHasAuthenticated(false);
   }
 
