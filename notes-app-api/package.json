@@ -13,7 +13,7 @@
     "url": "https://github.com/Krutarth1234/notes-app.git"
   },
   "devDependencies": {
-    "aws-sdk": "^2.635.0",
+    "aws-sdk": "^2.814.0",
     "serverless-bundle": "^1.3.2",
     "serverless-dotenv-plugin": "^2.1.1",
     "serverless-offline": "^5.3.3",
